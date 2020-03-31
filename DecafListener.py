@@ -17,6 +17,15 @@ class DecafListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DecafParser#field_name.
+    def enterField_name(self, ctx:DecafParser.Field_nameContext):
+        pass
+
+    # Exit a parse tree produced by DecafParser#field_name.
+    def exitField_name(self, ctx:DecafParser.Field_nameContext):
+        pass
+
+
     # Enter a parse tree produced by DecafParser#field_decl.
     def enterField_decl(self, ctx:DecafParser.Field_declContext):
         pass

@@ -10,37 +10,37 @@ grammar Decaf;
 
 /* Reserved words */
 fragment BOOLEAN : 'boolean';
-fragment BREAK : 'break';
-fragment CALLOUT : 'callout';
-fragment CLASS : 'class';
-fragment CONTINUE : 'continue';
-fragment ELSE : 'else';
+BREAK : 'break';
+CALLOUT : 'callout';
+CLASS : 'class';
+CONTINUE : 'continue';
+ELSE : 'else';
 fragment FALSE : 'false';
-fragment FOR : 'for';
-fragment IF : 'if';
+FOR : 'for';
+IF : 'if';
 fragment INT : 'int';
-fragment RETURN : 'return';
+RETURN : 'return';
 fragment TRUE : 'true';
-fragment VOID : 'void';
+VOID : 'void';
 
 /* WS + comments */
 WS : [ \t\r\n]+ -> skip;
 COMMENT : '/''/'~[\n|\r]* -> skip;
 
-fragment LCURLY : '{';
-fragment RCURLY : '}';
-fragment LSQUARE : '[';
-fragment RSQUARE : ']';
-fragment LBRACKET : '(';
-fragment RBRACKET : ')';
-fragment SEMICOLON : ';';
-fragment COMMA : ',';
+LCURLY : '{';
+RCURLY : '}';
+LSQUARE : '[';
+RSQUARE : ']';
+LBRACKET : '(';
+RBRACKET : ')';
+SEMICOLON : ';';
+COMMA : ',';
 fragment PLUS : '+';
-fragment MINUS : '-';
+MINUS : '-';
 fragment MULTIPLY : '*';
 fragment DIVIDE : '/';
 fragment MODULUS : '%';
-fragment EXCLAMATION : '!';
+EXCLAMATION : '!';
 fragment LESS_THAN : '<';
 fragment GREATER_THAN : '>';
 fragment LESS_EQUAL : '<=';
@@ -50,7 +50,7 @@ fragment NOT_EQUAL : '!=';
 fragment AND : '&&';
 fragment OR : '||';
 fragment HEX : '0x';
-fragment EQUALS : '=';
+EQUALS : '=';
 fragment PLUS_EQUALS : '+=';
 fragment MINUS_EQUALS : '-=';
 
@@ -79,7 +79,7 @@ DECIMAL_LITERAL : DIGIT DIGIT*;
 HEX_LITERAL : HEX HEX_DIGIT HEX_DIGIT*;
 BOOL_LITERAL : TRUE | FALSE;
 CHAR_LITERAL : '\''CHAR'\'';
-STRING_LITERAL : '\"'CHAR+'\"';
+STRING_LITERAL : '"'CHAR+'"';
 
 /*
   PARSER RULES
