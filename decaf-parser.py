@@ -19,8 +19,13 @@ class DecafPrintVisitor(DecafVisitor):
     def visitProgram(self, ctx:DecafParser.ProgramContext):
         self.printNode(ctx)
 
-filein = open('testdata/codegen/legal-01', 'r')
+filein = open('testdata/parser/legal-04', 'r')
 lexer = DecafLexer(ant.InputStream(filein.read()))
+
+for i in range(100):
+    token = lexer.nextToken()
+    if (token.type != -1):
+        print(lexer.symbolicNames[token.type])
 
 stream = ant.CommonTokenStream(lexer)
 parser = DecafParser(stream)

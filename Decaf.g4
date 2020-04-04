@@ -54,6 +54,14 @@ EQUALS : '=';
 fragment PLUS_EQUALS : '+=';
 fragment MINUS_EQUALS : '-=';
 
+/* Literals */
+STRING_LITERAL : '"' (~('"' | '\r' | '\n') | '\\' ('"' | '\\'))* '"';
+INT_LITERAL : DECIMAL_LITERAL;
+DECIMAL_LITERAL : DIGIT DIGIT*;
+HEX_LITERAL : HEX HEX_DIGIT HEX_DIGIT*;
+CHAR_LITERAL : '\'' ALPHA_NUM | ('\\' ('"' | '\\' | '\n' | '\t' | '\r')) '\'';
+BOOL_LITERAL : TRUE | FALSE;
+
 TYPE : INT | BOOLEAN;
 
 /* Binary operators */
@@ -69,17 +77,8 @@ fragment ALPHA : [a-zA-Z_];
 fragment DIGIT : [0-9];
 fragment ALPHA_NUM : ALPHA | DIGIT;
 ID : ALPHA ALPHA_NUM*;
-HEX_DIGIT : DIGIT [a-fA-F]*;
-
-CHAR : '\''('\\')*((ALPHA_NUM) | ('\\"') | ('\\') | ('\'') )'\'';
-
-/* Literals */
-INT_LITERAL : DECIMAL_LITERAL | HEX_LITERAL;
-DECIMAL_LITERAL : DIGIT DIGIT*;
-HEX_LITERAL : HEX HEX_DIGIT HEX_DIGIT*;
-BOOL_LITERAL : TRUE | FALSE;
-CHAR_LITERAL : '\''CHAR'\'';
-STRING_LITERAL : '"'CHAR+'"';
+NUMBER : MINUS* DIGIT+;
+HEX_DIGIT : DIGIT | [a-fA-F];
 
 /*
   PARSER RULES
