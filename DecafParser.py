@@ -232,6 +232,12 @@ class DecafParser ( Parser ):
             if hasattr( listener, "exitProgram" ):
                 listener.exitProgram(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitProgram" ):
+                return visitor.visitProgram(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -311,6 +317,12 @@ class DecafParser ( Parser ):
             if hasattr( listener, "exitField_name" ):
                 listener.exitField_name(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitField_name" ):
+                return visitor.visitField_name(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -385,6 +397,12 @@ class DecafParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitField_decl" ):
                 listener.exitField_decl(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitField_decl" ):
+                return visitor.visitField_decl(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -470,6 +488,12 @@ class DecafParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitMethod_decl" ):
                 listener.exitMethod_decl(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMethod_decl" ):
+                return visitor.visitMethod_decl(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -568,6 +592,12 @@ class DecafParser ( Parser ):
             if hasattr( listener, "exitBlock" ):
                 listener.exitBlock(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitBlock" ):
+                return visitor.visitBlock(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -645,6 +675,12 @@ class DecafParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitVar_decl" ):
                 listener.exitVar_decl(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitVar_decl" ):
+                return visitor.visitVar_decl(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -760,6 +796,12 @@ class DecafParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStatement" ):
                 listener.exitStatement(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitStatement" ):
+                return visitor.visitStatement(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -936,6 +978,12 @@ class DecafParser ( Parser ):
             if hasattr( listener, "exitMethod_call" ):
                 listener.exitMethod_call(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMethod_call" ):
+                return visitor.visitMethod_call(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1034,6 +1082,12 @@ class DecafParser ( Parser ):
             if hasattr( listener, "exitMethod_name" ):
                 listener.exitMethod_name(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMethod_name" ):
+                return visitor.visitMethod_name(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1083,6 +1137,12 @@ class DecafParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitLocation" ):
                 listener.exitLocation(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLocation" ):
+                return visitor.visitLocation(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1173,6 +1233,12 @@ class DecafParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitExpr" ):
                 listener.exitExpr(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExpr" ):
+                return visitor.visitExpr(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1283,6 +1349,12 @@ class DecafParser ( Parser ):
             if hasattr( listener, "exitCallout_arg" ):
                 listener.exitCallout_arg(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCallout_arg" ):
+                return visitor.visitCallout_arg(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1341,6 +1413,12 @@ class DecafParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitLiteral" ):
                 listener.exitLiteral(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLiteral" ):
+                return visitor.visitLiteral(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
