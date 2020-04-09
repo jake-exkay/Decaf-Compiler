@@ -107,7 +107,7 @@ method_call : method_name LBRACKET (expr (COMMA expr)*)* RBRACKET
           | CALLOUT LBRACKET STRING_LITERAL (COMMA callout_arg)* RBRACKET;
 method_name : ID;
 location : ID
-        | ID LSQUARE expr RSQUARE;
+         | ID LSQUARE expr RSQUARE;
 expr : location
      | method_call
      | literal
