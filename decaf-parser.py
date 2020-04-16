@@ -33,6 +33,9 @@ class DecafTreeVisitor(DecafVisitor):
     def visitVar_decl(self, ctx:DecafParser.Var_declContext):
         self.printNode(ctx)
 
+    def visitExpr(self, ctx:DecafParser.ExprContext):
+        return self.printNode(ctx)
+
 filein = open('testdata/semantics/illegal-01.dcf', 'r')
 lexer = DecafLexer(ant.InputStream(filein.read()))
 
