@@ -24,9 +24,11 @@ fragment TRUE : 'true';
 VOID : 'void';
 
 /* WS + comments */
+/* Comments started with // and end with a new line */
 WS : [ \t\r\n]+ -> skip;
 COMMENT : '/''/'~[\n|\r]* -> skip;
 
+/* Symbols */
 LCURLY : '{';
 RCURLY : '}';
 LSQUARE : '[';
@@ -54,14 +56,15 @@ EQUALS : '=';
 fragment PLUS_EQUALS : '+=';
 fragment MINUS_EQUALS : '-=';
 
+fragment CHAR : ~('"' | '\'' | '\\') | '\\\'' | '\\n' | '\\t' | '\\\\' | '\\"';
+
 /* Literals */
-STRING_LITERAL : '"' (~('"' | '\r' | '\n') | '\\' ('"' | '\\'))* '"';
-INT_LITERAL : DECIMAL_LITERAL;
+STRING_LITERAL : '"' CHAR+ '"';
+INT_LITERAL : NUMBER;
 DECIMAL_LITERAL : DIGIT DIGIT*;
 HEX_LITERAL : HEX HEX_DIGIT HEX_DIGIT*;
-CHAR_LITERAL : '\'' ALPHA_NUM | ('\\' ('"' | '\\' | '\n' | '\t' | '\r')) '\'';
+CHAR_LITERAL : '\'' CHAR '\'';
 BOOL_LITERAL : TRUE | FALSE;
-
 TYPE : INT | BOOLEAN;
 
 /* Binary operators */

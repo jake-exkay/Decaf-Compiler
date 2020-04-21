@@ -1,6 +1,6 @@
 import os
 import antlr4 as ant
-import SymbolTable
+from SymbolTable import SymbolTable, VarSymbol, MethodSymbol
 
 os.system("java -Xmx500M -cp antlr-4.7.2-complete.jar org.antlr.v4.Tool -Dlanguage=Python3 Decaf.g4 -visitor")
 
@@ -11,7 +11,7 @@ from DecafVisitor import DecafVisitor
 class DecafCodeGenVisitor(DecafVisitor):
     def __init__(self):
         super().__init__()
-        self.st = SymbolTable.SymbolTable()
+        self.st = SymbolTable()
         self.head = '.data\n'
         self.body = '.global main\n'
 
@@ -19,14 +19,29 @@ class DecafCodeGenVisitor(DecafVisitor):
         print("[DEBUG] Visiting: Program")
         self.st.enterScope()
         self.body += 'main:\n'
-        visit = self.visitChildren(ctx)
+        self.visitChildren(ctx)
         self.body += 'ret\n'
         self.st.exitScope()
-        return visit
 
     def visitMethod_decl(self, ctx:DecafParser.Method_declContext):
         print("[DEBUG] Visiting: Method Declaration")
+        method_type = ctx.TYPE().getText()
+        print(method_type)
+        method_name = ctx.ID(0).getText()
+        param_types = []
+        param_names = []
+        for i in range(len(ctx.data_type())):
+            param_types.append(ctx.data_type(i).getText())
+            param_names.append(ctx.ID(i + 1).getText())
+
+        method_symbol = SymbolTable.MethodSymbol(method_name, method_type, ctx.start.line, param_types)
+        self.st.addSymbol(method_symbol)
+        self.st.enterScope()
+
+        for i in range(len(param_types)):
+            self.st.addSymbol(SymbolTable.VarSymbol(param_names[i], param_types[i], ctx.start.line))
         visit = self.visitChildren(ctx)
+        self.st.exitScope()
         return visit
 
     def visitBlock(self, ctx:DecafParser.BlockContext):
@@ -88,19 +103,25 @@ class DecafCodeGenVisitor(DecafVisitor):
         visit = self.visitChildren(ctx)
         return visit
 
-source = 'testdata/semantics/illegal-05.dcf'
-filein = open(source, 'r')
+source = 'testdata/codegen/01-callout'
+filein = open(source + '.dcf', 'r')
 lexer = DecafLexer(ant.InputStream(filein.read()))
 
+#create a token stream from the lexer
 stream = ant.CommonTokenStream(lexer)
 
+#create a new parser with the token stream as input
 parser = DecafParser(stream)
 tree = parser.program()
 
+#create a new calc visitor
 codegen_visitor = DecafCodeGenVisitor()
 codegen_visitor.visit(tree)
 
+#output code
 code = codegen_visitor.head + codegen_visitor.body
+print(code)
+
 fileout = open(source + '.s', 'w')
 fileout.write(code)
 fileout.close()

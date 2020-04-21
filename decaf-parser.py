@@ -1,6 +1,5 @@
 import os
 import antlr4 as ant
-import SymbolTable
 
 os.system("java -Xmx500M -cp antlr-4.7.2-complete.jar org.antlr.v4.Tool -Dlanguage=Python3 Decaf.g4 -visitor")
 
@@ -36,16 +35,20 @@ class DecafTreeVisitor(DecafVisitor):
     def visitExpr(self, ctx:DecafParser.ExprContext):
         return self.printNode(ctx)
 
-filein = open('testdata/semantics/illegal-01.dcf', 'r')
+source = 'testdata/parser/legal-01'
+filein = open(source, 'r')
 lexer = DecafLexer(ant.InputStream(filein.read()))
 
+#create a token stream from the lexer
 stream = ant.CommonTokenStream(lexer)
+
+#create a new parser with the token stream as input
 parser = DecafParser(stream)
 tree = parser.program()
 
-visitor = DecafTreeVisitor()
-visitor.visit(tree)
-print(visitor.text)
+#create a new calc visitor
+tree_visitor = DecafTreeVisitor()
+tree_visitor.visit(tree)
 
-## Legal: 4, 6, 7, 8, 11, 12, 13, 14, 15, 16
-## Illegal:
+#output code
+print(tree_visitor.text)
