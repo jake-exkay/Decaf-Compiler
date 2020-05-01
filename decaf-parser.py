@@ -23,6 +23,12 @@ class DecafTreeVisitor(DecafVisitor):
     def visitProgram(self, ctx:DecafParser.ProgramContext):
         self.printNode(ctx)
 
+    def visitField_name(self, ctx:DecafParser.Field_nameContext):
+        self.printNode(ctx)
+
+    def visitField_decl(self, ctx:DecafParser.Field_declContext):
+        self.printNode(ctx)
+
     def visitMethod_decl(self, ctx:DecafParser.Method_declContext):
         self.printNode(ctx)
 
@@ -32,10 +38,28 @@ class DecafTreeVisitor(DecafVisitor):
     def visitVar_decl(self, ctx:DecafParser.Var_declContext):
         self.printNode(ctx)
 
-    def visitExpr(self, ctx:DecafParser.ExprContext):
-        return self.printNode(ctx)
+    def visitStatement(self, ctx:DecafParser.StatementContext):
+        self.printNode(ctx)
 
-source = 'testdata/parser/legal-01'
+    def visitMethod_call(self, ctx:DecafParser.Method_callContext):
+        self.printNode(ctx)
+
+    def visitMethod_name(self, ctx:DecafParser.Method_nameContext):
+        self.printNode(ctx)
+
+    def visitLocation(self, ctx:DecafParser.LocationContext):
+        self.printNode(ctx)
+
+    def visitExpr(self, ctx:DecafParser.ExprContext):
+        self.printNode(ctx)
+
+    def visitCallout_arg(self, ctx:DecafParser.Callout_argContext):
+        self.printNode(ctx)
+
+    def visitLiteral(self, ctx:DecafParser.LiteralContext):
+        self.printNode(ctx)
+
+source = 'testdata/codegen/01-callout.dcf'
 filein = open(source, 'r')
 lexer = DecafLexer(ant.InputStream(filein.read()))
 

@@ -98,6 +98,13 @@ field_decl : TYPE field_name (COMMA field_name)* SEMICOLON;
 method_decl : (TYPE | VOID) ID LBRACKET ((TYPE ID) (COMMA TYPE ID)*)* RBRACKET block;
 block : LCURLY var_decl* statement* RCURLY;
 var_decl : TYPE ID (COMMA ID)* SEMICOLON;
+expr : location
+     | method_call
+     | literal
+     | expr BIN_OP expr
+     | MINUS expr
+     | EXCLAMATION expr
+     | LBRACKET expr RBRACKET;
 statement : location ASSIGN_OP expr SEMICOLON
           | method_call SEMICOLON
           | IF LBRACKET expr RBRACKET block (ELSE block)?
@@ -111,13 +118,6 @@ method_call : method_name LBRACKET (expr (COMMA expr)*)* RBRACKET
 method_name : ID;
 location : ID
          | ID LSQUARE expr RSQUARE;
-expr : location
-     | method_call
-     | literal
-     | expr BIN_OP expr
-     | MINUS expr
-     | EXCLAMATION expr
-     | LBRACKET expr RBRACKET;
 callout_arg : expr
             | STRING_LITERAL;
 literal : INT_LITERAL | CHAR_LITERAL | BOOL_LITERAL;

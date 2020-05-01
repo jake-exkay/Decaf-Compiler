@@ -2,8 +2,16 @@ class Program
 {
     void main()
     {
+        int lol;
+        lol = 33;
         callout("printf", "Hello, World.\n");
-    }
-}
+        lol = 5 + 5;
 
-      
+    }
+
+    void test() {
+    }
+
+    test()
+
+}

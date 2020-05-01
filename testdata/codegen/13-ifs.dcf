@@ -3,18 +3,17 @@ class Program
     boolean not2(boolean a)
     {
         boolean b;
-        
+
         b = true;
         if (a) {
             b=false;
         }
-        
+
         return b;
     }
 
-    void phw(boolean a,boolean b,boolean c,boolean d,boolean e,boolean f,
-	     boolean g,boolean h,boolean i,boolean j )
-    {    
+    void phw(boolean a,boolean b,boolean c,boolean d,boolean e)
+    {
         if (a) {
             callout("printf","H");
             if (b) {
@@ -50,11 +49,11 @@ class Program
         callout("printf"," ");
 
         if (not2(f)) { callout ("printf","*"); }
-        
-	if (g) { 
-            if (not2(h)) { 
-	        callout("printf","W"); 
-                if (i) { 
+
+	if (g) {
+            if (not2(h)) {
+	        callout("printf","W");
+                if (i) {
 		    callout("printf","o");
                     if (j) { callout("printf","r"); }
                 }
@@ -62,12 +61,12 @@ class Program
         }
         if (not2(g)) {
             callout("printf","*");
-        }   
-    
+        }
+
         callout("printf","l");
         callout("printf","d");
     }
- 
+
     void main()
     {
         callout("printf","[");
@@ -87,14 +86,13 @@ class Program
 	    {
                 callout("printf","should be here\n");
 	    }
-	} 
+	}
 
-	else 
+	else
 	{
             callout("printf","should not be here\n");
 	}
-     
+
     }
 
 }
-

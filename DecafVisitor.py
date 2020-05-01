@@ -39,6 +39,11 @@ class DecafVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by DecafParser#expr.
+    def visitExpr(self, ctx:DecafParser.ExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by DecafParser#statement.
     def visitStatement(self, ctx:DecafParser.StatementContext):
         return self.visitChildren(ctx)
@@ -56,11 +61,6 @@ class DecafVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by DecafParser#location.
     def visitLocation(self, ctx:DecafParser.LocationContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by DecafParser#expr.
-    def visitExpr(self, ctx:DecafParser.ExprContext):
         return self.visitChildren(ctx)
 
 

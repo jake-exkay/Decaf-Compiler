@@ -21,9 +21,7 @@
     <script>
       var treeData = [
         //****paste ANTLR-4 tree-visitor string here****
-        {"name": "program","value":2,"children":[{"name": "class"},{"name": "Program"},{"name": "{"},{"name": "method_decl","value":2,"children":[{"name": "void"},{"name": "main"},{"name": "("},{"name": ")"},{"name": "block","value":2,"children":[{"name": "{"},{"name": "var_decl","value":2,"children":[{"name": "int"},{"name": "x"},{"name": ";"},]},{"name": "var_decl","value":2,"children":[{"name": "boolean"},{"name": "x"},{"name": ";"},]},{"name": "}"},]},]},{"name": "}"},{"name": "<EOF>"},]},
-      ]
-
+        {"name": "program","value":2,"children":[{"name": "class"},{"name": "Program"},{"name": "{"},{"name": "method_decl","value":2,"children":[{"name": "void"},{"name": "main"},{"name": "("},{"name": ")"},{"name": "block","value":2,"children":[{"name": "{"},{"name": "var_decl","value":2,"children":[{"name": "int"},{"name": "lol"},{"name": ";"},]},{"name": "statement","value":2,"children":[]},{"name": "statement","value":2,"children":[]},{"name": "statement","value":2,"children":[{"name": "method_call","value":2,"children":[{"name": "callout"},{"name": "("},{"name": "\"printf\""},{"name": ","},{"name": "callout_arg","value":2,"children":[{"name": "\"Hello, World.\\n\""},]},{"name": ")"},]},{"name": ";"},]},{"name": "statement","value":2,"children":[]},{"name": "statement","value":2,"children":[]},{"name": "}"},]},]},{"name": "method_decl","value":2,"children":[{"name": "void"},{"name": "test"},{"name": "("},{"name": ")"},{"name": "block","value":2,"children":[{"name": "{"},{"name": "}"},]},]},{"name": "}"},{"name": "<EOF>"},]},
       var margin = {top: 20, right: 20, bottom: 20, left: 20}, width = 650, height = 650;
       var i = 0;
       var tree = d3.layout.tree().size([height, width]);

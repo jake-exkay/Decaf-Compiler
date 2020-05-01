@@ -27,7 +27,7 @@ class SymbolTable:
             else:
                 self.stack_pointer[-1] += symbol.size
                 symbol.pointer = self.stack_pointer[-1]
-            
+
         self.scope[-1].append(symbol)
 
     def probe(self, id):
@@ -53,7 +53,7 @@ class VarSymbol:
         self.size = size
         self.mem = mem
         self.pointer = 0
-    
+
     def getAddr(self):
         return self.mem * self.pointer
 
