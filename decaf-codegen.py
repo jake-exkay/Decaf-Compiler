@@ -9,8 +9,8 @@ from DecafParser import DecafParser
 from DecafVisitor import DecafVisitor
 class DecafCodeGenVisitor(DecafVisitor):
 
-    IF_LABEL_COUNT = 0
-    CALLOUT_COUNT = 0
+    IF_LABEL_COUNT = 1
+    CALLOUT_COUNT = 1
 
     def __init__(self):
         super().__init__()
@@ -41,9 +41,8 @@ class DecafCodeGenVisitor(DecafVisitor):
         if self.st.probe(method_name) != None:
             print("Error: The method", method_name, "on line", line_number, "was already declared!")
         else:
-            if method_name != 'main':
-                self.body += method_name
-                self.body += ':\n'
+            self.body += method_name
+            self.body += ':\n'
 
         params = []
 
@@ -78,6 +77,10 @@ class DecafCodeGenVisitor(DecafVisitor):
         elif ctx.literal():
             print("[DEBUG] Expression is a number.")
             number = ctx.literal().getText()
+            if number == 'false':
+                number = '0'
+            if number == 'true':
+                number = '1'
             self.body += '\tmovq $' + number + ', %rax\n'
         elif len(ctx.expr()) > 1:
             print("[DEBUG] Expression length more than 1.")
@@ -95,9 +98,24 @@ class DecafCodeGenVisitor(DecafVisitor):
             self.body += '\tmovq %rax, %r11\n'
 
             if ctx.BIN_OP():
-                self.body += '\taddq %r10, %r11\n'
+                if str(ctx.BIN_OP()) == '+':
+                    self.body += '\taddq %r10, %r11\n'
+                if str(ctx.BIN_OP()) == '*':
+                    self.body += '\timul %r10, %r11\n'
+                if str(ctx.BIN_OP()) == '-':
+                    self.body += '\tsubq %r10, %r11\n'
+                if str(ctx.BIN_OP()) == '/':
+                    self.body += '\tmovq $0, rdx\n'
+                    self.body += '\tmovq %r11, rbx\n'
+                    self.body += '\tmovq %r10, rax\n'
+                    self.body += '\tidiv %rbx\n'
 
             self.body += '\tmovq %r11, %rax\n'
+
+    def visitField_name(self, ctx:DecafParser.Field_nameContext):
+        print("[DEBUG] Visiting: Field Name")
+        visit = self.visitChildren(ctx)
+        return visit
 
     def visitVar_decl(self, ctx:DecafParser.Var_declContext):
         print("[DEBUG] Visiting: Variable Declaration")
@@ -125,7 +143,7 @@ class DecafCodeGenVisitor(DecafVisitor):
             print("[DEBUG] Break statement found")
             self.body += '\tjmp main\n'
         if ctx.IF():
-            if_label = 'label'+str(self.IF_LABEL_COUNT)
+            if_label = 'if-label-'+str(self.IF_LABEL_COUNT)
             self.body += '\tcmp %r11 %r10\n'
             self.body += '\tjl '+if_label+'l\n'
             self.body += '\tje '+if_label+'e\n'
@@ -134,8 +152,13 @@ class DecafCodeGenVisitor(DecafVisitor):
             self.body += if_label+':\n'
             self.IF_LABEL_COUNT = self.IF_LABEL_COUNT + 1
             ctx.expr()
-        if ctx.ASSIGN_OP():
-            self.expr()
+        if ctx.RETURN():
+            if ctx.expr():
+                return_value = str(ctx.expr(0).getText())
+                self.body += '\tmovq $'+return_value+', %rax\n'
+                self.body += '\tret\n'
+            else:
+                self.body += '\tret\n'
 
         visit = self.visitChildren(ctx)
         return visit
@@ -149,22 +172,29 @@ class DecafCodeGenVisitor(DecafVisitor):
         print("[DEBUG] Visiting: Method Call")
         method_name = ctx.method_name()
         method_symbol = self.st.lookup(method_name)
-        if method_symbol == None:
-            print("Error: Call to a function that does not exist:", method_name)
+        if ctx.callout_arg():
+            print("[DEBUG] Found callout method call")
         else:
-            self.body += '\tjmp '+method_name+'\n'
+            if method_symbol == None:
+                print("Error: Call to a function that does not exist:", method_name)
+            else:
+                self.body += '\tjmp '+method_name+'\n'
         visit = self.visitChildren(ctx)
         return visit
 
     def visitCallout_arg(self, ctx:DecafParser.Callout_argContext):
         print("[DEBUG] Visiting: Callout Arg")
-        self.head += 'callout'+str(self.CALLOUT_COUNT)+': .asciz '+str(ctx.STRING_LITERAL())+'\n'
+        self.head += 'string'+str(self.CALLOUT_COUNT)+': .asciz '+str(ctx.STRING_LITERAL())+'\n'
+        self.body += '\tmovq $'+str(self.CALLOUT_COUNT)+', %rdi\n'
+        self.body += '\tsubq $8, %rsp\n'
+        self.body += '\tcall printf\n'
+        self.body += '\taddq $8, %rsp\n'
         self.CALLOUT_COUNT = self.CALLOUT_COUNT + 1
 
         visit = self.visitChildren(ctx)
         return visit
 
-source = 'testdata/codegen/13-ifs'
+source = 'testdata/codegen/05-calls'
 filein = open(source + '.dcf', 'r')
 lexer = DecafLexer(ant.InputStream(filein.read()))
 

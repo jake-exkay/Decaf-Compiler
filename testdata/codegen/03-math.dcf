@@ -1,15 +1,15 @@
 class Program
 {
-    void main () 
+    void main ()
     {
-        int i1;
-    
+        int i1[3];
+        i1[3]
         i1 = -2147483647 - 1;
         callout("printf","min int operation: result should be -2147483648, is: %d\n",i1);
         i1 = (100 - 50) * 2;
   	callout("printf","paren assoc: result should be 100, is: %d\n",i1);
   	i1 = 100 - 50 - 40;
-        callout("printf","- assoc: result should be 10, is: %d\n",i1); 
+        callout("printf","- assoc: result should be 10, is: %d\n",i1);
   	i1 = 100 - 50 + 40;
         callout("printf","-,+ assoc: result should be 90, is: %d\n",i1);
   	i1 = 100 - 5 * 4;
@@ -21,6 +21,7 @@ class Program
         callout("printf","*, -, uses var: result should be 11, is: %d\n",i1);
         i1 = 3 * 4 - 2 * 5;
         callout("printf","*,- assoc: result should be 2, is: %d\n",i1);
+        return 1;
+
     }
 }
-

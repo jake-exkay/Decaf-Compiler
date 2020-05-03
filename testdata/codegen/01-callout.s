@@ -1,6 +1,18 @@
 .data
+string1: .asciz "Hello, World.\n"
 .global main
-movq %rax, -8(%rsp)
-test:
 main:
+	movq %rax, -8(%rsp)
+	movq $33, %rax
+	movq $1, %rdi
+	subq $8, %rsp
+	call string1
+	addq $8, %rsp
+	movq $5, %rax
+	movq %rax, -16(%rsp)
+	movq $5, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	addq %r10, %r11
+	movq %r11, %rax
 ret

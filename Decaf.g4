@@ -52,7 +52,7 @@ fragment NOT_EQUAL : '!=';
 fragment AND : '&&';
 fragment OR : '||';
 fragment HEX : '0x';
-EQUALS : '=';
+fragment EQUALS : '=';
 fragment PLUS_EQUALS : '+=';
 fragment MINUS_EQUALS : '-=';
 
@@ -108,7 +108,7 @@ expr : location
 statement : location ASSIGN_OP expr SEMICOLON
           | method_call SEMICOLON
           | IF LBRACKET expr RBRACKET block (ELSE block)?
-          | FOR ID EQUALS expr COMMA expr block
+          | FOR ID ASSIGN_OP expr COMMA expr block
           | RETURN expr? SEMICOLON
           | BREAK SEMICOLON
           | CONTINUE SEMICOLON

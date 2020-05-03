@@ -9,9 +9,4 @@ class Program
 
     }
 
-    void test() {
-    }
-
-    test()
-
 }
