@@ -17,57 +17,105 @@ string15: .asciz "*,- assoc: result should be 2, is: %d\n"
 string16: .asciz None
 .global main
 main:
-	movq %rax, -8(%rsp)
+	movq %rax, -0(%rsp)
 	movq $3, %rax
 	movq $-2147483647, %rax
+	movq %rax, -16(%rsp)
+	movq $1, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
 	movq $1, %rdi
 	subq $8, %rsp
-	call string1
+	call printf
 	addq $8, %rsp
 	movq $2, %rdi
 	subq $8, %rsp
-	call string2
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
+	movq %rax, -16(%rsp)
+	movq $2, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	imul %r10, %r11
+	movq %r11, %rax
 	movq $3, %rdi
 	subq $8, %rsp
-	call string3
+	call printf
 	addq $8, %rsp
 	movq $4, %rdi
 	subq $8, %rsp
-	call string4
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq $100, %rax
+	movq %rax, -16(%rsp)
+	movq $50, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
+	movq %rax, -16(%rsp)
+	movq $40, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
 	movq $5, %rdi
 	subq $8, %rsp
-	call string5
+	call printf
 	addq $8, %rsp
 	movq $6, %rdi
 	subq $8, %rsp
-	call string6
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq $100, %rax
+	movq %rax, -16(%rsp)
+	movq $50, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
+	movq %rax, -16(%rsp)
+	movq $40, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	addq %r10, %r11
+	movq %r11, %rax
 	movq $7, %rdi
 	subq $8, %rsp
-	call string7
+	call printf
 	addq $8, %rsp
 	movq $8, %rdi
 	subq $8, %rsp
-	call string8
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq $100, %rax
+	movq %rax, -16(%rsp)
+	movq $5, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
+	movq %rax, -16(%rsp)
+	movq $4, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	imul %r10, %r11
+	movq %r11, %rax
 	movq $9, %rdi
 	subq $8, %rsp
-	call string9
+	call printf
 	addq $8, %rsp
 	movq $10, %rdi
 	subq $8, %rsp
-	call string10
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq $10, %rax
 	movq %rax, -16(%rsp)
 	movq $5, %rax
@@ -75,32 +123,43 @@ main:
 	movq %rax, %r11
 	imul %r10, %r11
 	movq %r11, %rax
+	movq %rax, -16(%rsp)
+	movq $4, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
 	movq $11, %rdi
 	subq $8, %rsp
-	call string11
+	call printf
 	addq $8, %rsp
 	movq $12, %rdi
 	subq $8, %rsp
-	call string12
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq $3, %rax
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq %rax, -16(%rsp)
-	movq -16(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq -16(%rsp), %r10
 	movq %rax, %r11
 	imul %r10, %r11
 	movq %r11, %rax
+	movq %rax, -16(%rsp)
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
 	movq $13, %rdi
 	subq $8, %rsp
-	call string13
+	call printf
 	addq $8, %rsp
 	movq $14, %rdi
 	subq $8, %rsp
-	call string14
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq $3, %rax
 	movq %rax, -16(%rsp)
 	movq $4, %rax
@@ -108,15 +167,27 @@ main:
 	movq %rax, %r11
 	imul %r10, %r11
 	movq %r11, %rax
+	movq %rax, -16(%rsp)
+	movq $2, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	subq %r10, %r11
+	movq %r11, %rax
+	movq %rax, -16(%rsp)
+	movq $5, %rax
+	movq -16(%rsp), %r10
+	movq %rax, %r11
+	imul %r10, %r11
+	movq %r11, %rax
 	movq $15, %rdi
 	subq $8, %rsp
-	call string15
+	call printf
 	addq $8, %rsp
 	movq $16, %rdi
 	subq $8, %rsp
-	call string16
+	call printf
 	addq $8, %rsp
-	movq -8(%rsp), %rax
+	movq -0(%rsp), %rax
 	movq $1, %rax
 	ret
 	movq $1, %rax

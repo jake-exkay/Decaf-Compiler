@@ -2,11 +2,11 @@
 string1: .asciz "Hello, World.\n"
 .global main
 main:
-	movq %rax, -8(%rsp)
+	movq %rax, -0(%rsp)
 	movq $33, %rax
 	movq $1, %rdi
 	subq $8, %rsp
-	call string1
+	call printf
 	addq $8, %rsp
 	movq $5, %rax
 	movq %rax, -16(%rsp)

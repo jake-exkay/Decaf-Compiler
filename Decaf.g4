@@ -38,7 +38,7 @@ RBRACKET : ')';
 SEMICOLON : ';';
 COMMA : ',';
 fragment PLUS : '+';
-MINUS : '-';
+fragment MINUS : '-';
 fragment MULTIPLY : '*';
 fragment DIVIDE : '/';
 fragment MODULUS : '%';
@@ -102,7 +102,7 @@ expr : location
      | method_call
      | literal
      | expr BIN_OP expr
-     | MINUS expr
+     | BIN_OP expr
      | EXCLAMATION expr
      | LBRACKET expr RBRACKET;
 statement : location ASSIGN_OP expr SEMICOLON

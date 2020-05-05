@@ -7,50 +7,66 @@ os.system("java -Xmx500M -cp antlr-4.7.2-complete.jar org.antlr.v4.Tool -Dlangua
 from DecafLexer import DecafLexer
 from DecafParser import DecafParser
 from DecafVisitor import DecafVisitor
+
+# Visitor class for accessing the parsed data.
 class DecafCodeGenVisitor(DecafVisitor):
 
+    # Global variables, used to keep track of how many if statements, callouts and loops exist in the code.
     IF_LABEL_COUNT = 1
     CALLOUT_COUNT = 1
+    LOOP_COUNT = 1
 
+    # Constructor sets up the header of the assembly code.
     def __init__(self):
         super().__init__()
         self.st = SymbolTable()
         self.head = '.data\n'
         self.body = '.global main\n'
 
+    # Visits the program node, ensures there is a main method.
     def visitProgram(self, ctx:DecafParser.ProgramContext):
-        print("[DEBUG] Visiting: Program")
         self.st.enterScope()
         self.visitChildren(ctx)
         method_symbol = self.st.lookup('main')
         params = []
+
+        # Checks if main method has been declared and if it contains paramaters.
         if method_symbol == None:
-            print("Error: No main method has been declared.")
+            print('[Error]: No main method has been declared.')
         else:
             if len(params) != 0:
-                print("Error: The main method cannot contain paramaters.")
+                print('[Error]: The main method cannot contain paramaters.')
         self.body += 'ret\n'
         self.st.exitScope()
 
+    # Visits the method declaration node, checks if method is already declared and manages parameters.
     def visitMethod_decl(self, ctx:DecafParser.Method_declContext):
-        print("[DEBUG] Visiting: Method Declaration")
         method_name = ctx.ID(0).getText()
         return_type = ctx.TYPE(0)
         line_number = ctx.start.line
 
+        # Checks if the method has already been declared.
         if self.st.probe(method_name) != None:
-            print("Error: The method", method_name, "on line", line_number, "was already declared!")
+            print('[Error]: The method ' + method_name + ' on line: ' + line_number + 'was already declared!')
         else:
             self.body += method_name
             self.body += ':\n'
 
         params = []
 
-        for param in range(len(ctx.ID())):
-            params.append(ctx.ID(param).getText())
+        # Loops through paramaters and creates a var symbol for them and appends them to a list.
+        if len(params) > 1:
+            for param in range(len(ctx.ID())):
+                param_name = ctx.ID(param).getText()
+                params.append(param_name)
+                var_symbol = self.st.probe(param_name)
+                if var_symbol == None:
+                    var_symbol = VarSymbol(id=param_name, type='int', line=ctx.start.line, size=8, mem=self.st.stack_pointer)
+                    self.st.addSymbol(var_symbol)
+                    var_addr = var_symbol.getAddr()
+                    self.body += '\tmovq %rax, -' + str(var_addr[0]) + '(%rsp)\n'
 
-        params.pop(0)
-        print(params)
+            params.pop(0)
 
         method_symbol = MethodSymbol(id=method_name, type=return_type, line=line_number, params=params)
         self.st.addSymbol(method_symbol)
@@ -58,32 +74,40 @@ class DecafCodeGenVisitor(DecafVisitor):
         visit = self.visitChildren(ctx)
         return visit
 
+    # Visits block node, enters a new scope inside the block.
     def visitBlock(self, ctx:DecafParser.BlockContext):
-        print("[DEBUG] Visiting: Block")
+        self.st.enterScope()
         visit = self.visitChildren(ctx)
+        self.st.exitScope()
         return visit
 
+    # Visits expression node, handles variable assignment.
     def visitExpr(self, ctx:DecafParser.ExprContext):
-        print("[DEBUG] Visiting: Expression")
+
+        # Expression is a variable.
         if ctx.location():
-            print("[DEBUG] Expression is a variable.")
             var_name = ctx.location().getText()
             var_symbol = self.st.lookup(var_name)
+            if "[" in var_name:
+                split_var = var_name.split('[', 1)[0]
+                var_symbol = self.st.lookup(split_var)
             if var_symbol == None:
-                print('Error: Variable', var_name, 'has not been declared. Found on line', ctx.start.line)
+                print('[Error]: Variable', var_name, 'has not been declared. Found on line', ctx.start.line)
             else:
                 var_addr = var_symbol.getAddr()
                 self.body += '\tmovq -' + str(var_addr[0]) + '(%rsp), %rax\n'
+
+        # Expression is a literal (number or string/char)
         elif ctx.literal():
-            print("[DEBUG] Expression is a number.")
             number = ctx.literal().getText()
             if number == 'false':
                 number = '0'
             if number == 'true':
                 number = '1'
             self.body += '\tmovq $' + number + ', %rax\n'
+
+        # Expression length is more than 1 (more expressions present such as an operation)
         elif len(ctx.expr()) > 1:
-            print("[DEBUG] Expression length more than 1.")
             # Visit the first expression.
             self.visit(ctx.expr(0))
 
@@ -97,6 +121,7 @@ class DecafCodeGenVisitor(DecafVisitor):
             self.st.stack_pointer[-1] -= 8
             self.body += '\tmovq %rax, %r11\n'
 
+            # If a binary operator is present, check the operator and add appropriate code.
             if ctx.BIN_OP():
                 if str(ctx.BIN_OP()) == '+':
                     self.body += '\taddq %r10, %r11\n'
@@ -112,37 +137,36 @@ class DecafCodeGenVisitor(DecafVisitor):
 
             self.body += '\tmovq %r11, %rax\n'
 
-    def visitField_name(self, ctx:DecafParser.Field_nameContext):
-        print("[DEBUG] Visiting: Field Name")
-        visit = self.visitChildren(ctx)
-        return visit
-
+    # Visits the variable declaration node, handles storage of variables and name checking.
     def visitVar_decl(self, ctx:DecafParser.Var_declContext):
-        print("[DEBUG] Visiting: Variable Declaration")
+
+        # Loops through all variables (to evaluate int x, y, z for example.)
         for i in range(len(ctx.ID())):
             var_name = ctx.ID(i).getText()
             var_symbol = self.st.probe(var_name)
-            if var_symbol == None:
-                var_symbol = VarSymbol(id=var_name, type='int', line=ctx.start.line, size=8, mem=self.st.stack_pointer)
-                self.st.addSymbol(var_symbol)
-                var_addr = var_symbol.getAddr()
-                print("[DEBUG] Variable ", var_name, " added.")
-                self.body += '\tmovq %rax, -' + str(var_addr[0]) + '(%rsp)\n'
+            if "[" in var_name:
+                array_var_name = ctx.ID(i).getText()
+                split_var = array_var_name.split('[', 1)[0]
             else:
-                print('Error:', var_symbol.id + ', declared on line', ctx.start.line, 'has already been declared on line', var_symbol.line)
+                if var_symbol == None:
+                    var_symbol = VarSymbol(id=var_name, type='int', line=ctx.start.line, size=8, mem=self.st.stack_pointer)
+                    self.st.addSymbol(var_symbol)
+                    var_addr = var_symbol.getAddr()
+                    self.body += '\tmovq %rax, -' + str(var_addr[0]) + '(%rsp)\n'
+                else:
+                    print('[Error]:', var_symbol.id + ', declared on line', ctx.start.line, 'has already been declared on line', var_symbol.line)
 
         visit = self.visitChildren(ctx)
         return visit
 
+    # Visit the statement node, handles constructs such as IF statements and FOR loops.
     def visitStatement(self, ctx:DecafParser.StatementContext):
-        print("[DEBUG] Visiting: Statement")
         if ctx.CONTINUE() != None:
-            print("[DEBUG] Continue statement found")
             self.body += '\tjmp main\n'
         if ctx.BREAK() != None:
-            print("[DEBUG] Break statement found")
             self.body += '\tjmp main\n'
         if ctx.IF():
+            self.st.enterScope()
             if_label = 'if-label-'+str(self.IF_LABEL_COUNT)
             self.body += '\tcmp %r11 %r10\n'
             self.body += '\tjl '+if_label+'l\n'
@@ -152,6 +176,7 @@ class DecafCodeGenVisitor(DecafVisitor):
             self.body += if_label+':\n'
             self.IF_LABEL_COUNT = self.IF_LABEL_COUNT + 1
             ctx.expr()
+            self.st.exitScope()
         if ctx.RETURN():
             if ctx.expr():
                 return_value = str(ctx.expr(0).getText())
@@ -159,31 +184,67 @@ class DecafCodeGenVisitor(DecafVisitor):
                 self.body += '\tret\n'
             else:
                 self.body += '\tret\n'
+        if ctx.FOR():
+            self.st.enterScope()
+            start_value = ctx.expr(0)
+            end_value = ctx.expr(1)
+            self.body += '\tmovq $1, %rbx\n'
+            self.body += '\tjmp begin-for-'+str(self.LOOP_COUNT)+'\n'
+            self.body += 'begin-for-'+str(self.LOOP_COUNT)+':\n'
+            self.body += '\tcmp $'+str(end_value)+ ', %rbx\n'
+            self.body += '\tjge end-for-'+str(self.LOOP_COUNT)+'\n'
+            visit = self.visitChildren(ctx)
+            self.body += '\taddq $1, %rbx\n'
+            self.body += '\tjmp begin-for-'+str(self.LOOP_COUNT)+'\n'
+            self.body += 'end-for-'+str(self.LOOP_COUNT)+':\n'
+            self.body += '\tret\n'
+
+            self.LOOP_COUNT = self.LOOP_COUNT + 1
+            self.st.exitScope()
 
         visit = self.visitChildren(ctx)
         return visit
 
+    # Visit field declaration node, handles assignment of arrays.
     def visitField_decl(self, ctx:DecafParser.Field_declContext):
-        print("[DEBUG] Visiting: Field Decl")
+        for i in range(len(ctx.field_name())):
+            var_name = ctx.field_name(i).getText()
+            var_symbol = self.st.probe(var_name)
+
+            # Declaration is an array.
+            if "[" in var_name:
+                array_var_name = ctx.field_name(i).getText()
+                split_var = array_var_name.split('[', 1)[0]
+                if var_symbol == None:
+                    var_symbol = VarSymbol(id=split_var, type='int', line=ctx.start.line, size=8, mem=self.st.stack_pointer)
+                    self.st.addSymbol(var_symbol)
+                    var_addr = var_symbol.getAddr()
+                    self.body += '\tmovq %rax, -' + str(var_addr[0]) + '(%rsp)\n'
+            else:
+                if var_symbol == None:
+                    var_symbol = VarSymbol(id=var_name, type='int', line=ctx.start.line, size=8, mem=self.st.stack_pointer)
+                    self.st.addSymbol(var_symbol)
+                    var_addr = var_symbol.getAddr()
+                    self.body += '\tmovq %rax, -' + str(var_addr[0]) + '(%rsp)\n'
+                else:
+                    print('[Error]:', var_symbol.id + ', declared on line', ctx.start.line, 'has already been declared on line', var_symbol.line)
         visit = self.visitChildren(ctx)
         return visit
 
+    # Visit method call node, checks if method exists.
     def visitMethod_call(self, ctx:DecafParser.Method_callContext):
-        print("[DEBUG] Visiting: Method Call")
         method_name = ctx.method_name()
         method_symbol = self.st.lookup(method_name)
-        if ctx.callout_arg():
-            print("[DEBUG] Found callout method call")
-        else:
+        if not ctx.callout_arg():
             if method_symbol == None:
-                print("Error: Call to a function that does not exist:", method_name)
+                print('[Error]: Call to a function that does not exist: ' + str(method_name) + ' on line: ' + str(ctx.start.line))
             else:
                 self.body += '\tjmp '+method_name+'\n'
         visit = self.visitChildren(ctx)
         return visit
 
+    # Visits callout arg node, handles adding strings to the head and printing text.
     def visitCallout_arg(self, ctx:DecafParser.Callout_argContext):
-        print("[DEBUG] Visiting: Callout Arg")
         self.head += 'string'+str(self.CALLOUT_COUNT)+': .asciz '+str(ctx.STRING_LITERAL())+'\n'
         self.body += '\tmovq $'+str(self.CALLOUT_COUNT)+', %rdi\n'
         self.body += '\tsubq $8, %rsp\n'
@@ -194,22 +255,18 @@ class DecafCodeGenVisitor(DecafVisitor):
         visit = self.visitChildren(ctx)
         return visit
 
-source = 'testdata/codegen/05-calls'
+# Variable to set testing file name.
+source = 'testdata/codegen/00-empty'
 filein = open(source + '.dcf', 'r')
 lexer = DecafLexer(ant.InputStream(filein.read()))
 
-#create a token stream from the lexer
 stream = ant.CommonTokenStream(lexer)
-
-#create a new parser with the token stream as input
 parser = DecafParser(stream)
 tree = parser.program()
-
-#create a new calc visitor
 codegen_visitor = DecafCodeGenVisitor()
 codegen_visitor.visit(tree)
 
-#output code
+# Code outputs and creates .s file.
 code = codegen_visitor.head + codegen_visitor.body
 print("\n\n-- ASSEMBLY OUTPUT --\n")
 print(code)
